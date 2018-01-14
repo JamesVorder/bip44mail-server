@@ -1,0 +1,31 @@
+{
+  "name": "bip44mail-server",
+  "version": "1.0.0",
+  "description": "An API for creating bip44 derived email addresses.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JamesVorder/bip44mail-server.git"
+  },
+  "keywords": [
+    "bip44",
+    "email",
+    "rest",
+    "node.js",
+    "express"
+  ],
+  "author": "NickNack",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JamesVorder/bip44mail-server/issues"
+  },
+  "homepage": "https://github.com/JamesVorder/bip44mail-server#readme",
+  "dependencies": {
+    "express": "^4.16.2",
+    "http": "0.0.0"
+  }
+}
