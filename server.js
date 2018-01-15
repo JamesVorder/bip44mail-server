@@ -1,12 +1,10 @@
 var express = require('express');
+var api = require('./routes/api.js');
 
 var app = express();
 
-app.get('/wines', function(req, res) {
-    res.send([{name:'wine1'}, {name:'wine2'}]);
-});
-app.get('/wines/:id', function(req, res) {
-    res.send({id:req.params.id, name: "The Name", description: "description"});
+app.get('/mail/:publicKey/:address', function(req, res) {
+    res.send(new Address(req.params.address, req.params.publicKey));
 });
 
 app.listen(3000);
