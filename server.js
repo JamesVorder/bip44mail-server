@@ -1,5 +1,6 @@
 var express = require('express');
 var api = require('./routes/api.js');
+var Address = require('./models/Address.js');
 
 var app = express();
 
