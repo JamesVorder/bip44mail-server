@@ -1,10 +1,20 @@
-function Address(addr, pub_key){
+var util = require("ethereumjs-util");
+var lightwallet = require("eth-lightwallet");
+
+function Address(signature, msg, addr){
     this.location = addr;
-    this.pub_key = pub_key;
+    this.signature = JSON.parse(signature);
+    this.msg = msg;
 };
 
 Address.prototype.isValid = function(){
-    //TODO: add real logic
-    //this method should attempt to verify the address via the public key provided
-
+     var v = this.signature.v;
+     var r = this.signature.r;
+     var s = this.signature.s;
+     var result = lightwallet.signing.recoverAddress("hello world", v, util.toBuffer(r.data), util.toBuffer(s.data));
+     console.log("Expected:\t" + this.location);
+     console.log("Got:\t\t" + util.bufferToHex(result));
+     return this.location == util.bufferToHex(result);
 };
+
+module.exports = Address;
