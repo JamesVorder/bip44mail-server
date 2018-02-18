@@ -18,34 +18,33 @@ app.post('/validate', function(req, res) {
 
 app.post('/send', function(req, res){
     console.log("/send endpoint called.");
-    //TODO: hide the next two values before commit
-    var api_key = "##########";
-    var domain = "bip44.email";
-    var mailgun = new Mailgun({apiKey: api_key, domain: domain});
+    //TODO: This stuff...
+    var addr = new Address(req.body.signature, req.body.message, req.body.address);
+    if(addr.isValid(req.body.message)){
+      //TODO: hide the next two values before commit
+      var api_key = "";
+      var domain = "";
+      var mailgun = new Mailgun({apiKey: api_key, domain: domain});
 
 
-    var data = {
-        from: req.body.from,
+      var data = {
+        from: req.body.from + "@" + domain,
         to: req.body.to,
         subject: req.body.subject,
         html: req.body.message
-    };
+      };
 
-    mailgun.messages().send(data, function (err, body) {
+      mailgun.messages().send(data, function (err, body) {
         if (err) {
-            //res.render('error', { error : err});
-            console.log("got an error: ", err);
+          res.status(500).send(err);
+          console.log("Error: ", err);
         }
         else {
-            //res.render('submitted', { email : to });
-            console.log(body);
+          res.status(200).send(body);
+          console.log("Success: " + body);
         }
-    });
-    //TODO: This stuff...
-    //var addr = new Address(req.body.signature, req.body.address);
-    //if(addr.isValid(req.body.message)){
-    //
-    //}
+      });
+    }
 });
 
 app.listen(3000);

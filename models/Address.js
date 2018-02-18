@@ -11,8 +11,8 @@ Address.prototype.isValid = function(message){
      var r = this.signature.r;
      var s = this.signature.s;
      var result = lightwallet.signing.recoverAddress(message, v, util.toBuffer(r.data), util.toBuffer(s.data));
-     console.log("Expected:\t" + this.location);
-     console.log("Got:\t\t" + util.bufferToHex(result));
+     // console.log("Expected:\t" + this.location);
+     // console.log("Got:\t\t" + util.bufferToHex(result));
      return this.location == util.bufferToHex(result);
 };
 
