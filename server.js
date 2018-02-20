@@ -3,6 +3,11 @@ var Address = require('./models/Address.js');
 var bodyParser = require("body-parser");
 var Mailgun = require('mailgun-js');
 
+//TODO: hide the next two values before commit
+var api_key = "";
+var domain = "";
+var mailgun = new Mailgun({apiKey: api_key, domain: domain});
+
 
 var app = express();
 
@@ -18,15 +23,8 @@ app.post('/validate', function(req, res) {
 
 app.post('/send', function(req, res){
     console.log("/send endpoint called.");
-    //TODO: This stuff...
     var addr = new Address(req.body.signature, req.body.message, req.body.address);
     if(addr.isValid(req.body.message)){
-      //TODO: hide the next two values before commit
-      var api_key = "";
-      var domain = "";
-      var mailgun = new Mailgun({apiKey: api_key, domain: domain});
-
-
       var data = {
         from: req.body.from + "@" + domain,
         to: req.body.to,
@@ -45,6 +43,31 @@ app.post('/send', function(req, res){
         }
       });
     }
+});
+
+//required fields: signature, address
+app.post('/create_inbox', function(req, res){
+  console.log('/create_inbox called...');
+  var addr = new Address(req.body.signature, req.body.address);
+  if(addr.isValid(req.body.address)){
+    //TODO: Change the description to the txid of the payment
+    mailgun.post('/routes', {'priority': 0,
+      'description': addr.location + " route",
+      'expression': 'match_recipient("' + addr.location + '@' + domain + '")',
+      //TODO: make the following field dynamic. (Maybe there's a free version that just forwards to your standard inbox)
+      //This action could also be changed to notify another endpoint on mail reciept, that can store the emails in an s3 bucket or something
+      //buzzwords.
+      'action': 'forward("jamesvorder@gmail.com")'
+    }, function(error, body){
+      if(error){
+        res.status(500).send(error);
+        console.log("Error: " + error);
+      } else{
+        res.status(200).send(body);
+        console.log("Success: " + JSON.stringify(body));
+      }
+    });
+  }
 });
 
 app.listen(3000);

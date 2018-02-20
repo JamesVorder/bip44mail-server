@@ -1,7 +1,7 @@
 var util = require("ethereumjs-util");
 var lightwallet = require("eth-lightwallet");
 
-function Address(signature, msg, addr){
+function Address(signature, addr){
     this.location = addr;
     this.signature = JSON.parse(signature);
 };
