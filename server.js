@@ -4,8 +4,8 @@ var bodyParser = require("body-parser");
 var Mailgun = require('mailgun-js');
 
 //TODO: hide the next two values before commit
-var api_key = "";
-var domain = "";
+var api_key = "key-529a4ff9954a7c2bbe511e8528bcd48f";
+var domain = "bip44.email";
 var mailgun = new Mailgun({apiKey: api_key, domain: domain});
 
 
@@ -23,8 +23,9 @@ app.post('/validate', function(req, res) {
 
 app.post('/send', function(req, res){
     console.log("/send endpoint called.");
-    var addr = new Address(req.body.signature, req.body.message, req.body.address);
+    var addr = new Address(req.body.signature, req.body.address);
     if(addr.isValid(req.body.message)){
+      console.log("Address was valid");
       var data = {
         from: req.body.from + "@" + domain,
         to: req.body.to,
@@ -52,11 +53,10 @@ app.post('/create_inbox', function(req, res){
   if(addr.isValid(req.body.address)){
     //TODO: Change the description to the txid of the payment
     mailgun.post('/routes', {'priority': 0,
-      'description': addr.location + " route",
-      'expression': 'match_recipient("' + addr.location + '@' + domain + '")',
+      'description': addr.location,
+      'expression': 'match_recipient("' + addr.location + '")',
       //TODO: make the following field dynamic. (Maybe there's a free version that just forwards to your standard inbox)
       //This action could also be changed to notify another endpoint on mail reciept, that can store the emails in an s3 bucket or something
-      //buzzwords.
       'action': 'forward("jamesvorder@gmail.com")'
     }, function(error, body){
       if(error){
