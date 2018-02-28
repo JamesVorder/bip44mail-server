@@ -4,8 +4,8 @@ var bodyParser = require("body-parser");
 var Mailgun = require('mailgun-js');
 
 //TODO: hide the next two values before commit
-var api_key = "key-529a4ff9954a7c2bbe511e8528bcd48f";
-var domain = "bip44.email";
+var api_key = "";
+var domain = "";
 var mailgun = new Mailgun({apiKey: api_key, domain: domain});
 
 
