@@ -14,8 +14,6 @@ var mailgun = new Mailgun({apiKey: api_key, domain: domain});
 var app = express();
 
 app.use('/api', Swagger.serve, Swagger.setup(docs));
-
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -28,7 +26,7 @@ app.post('/validate', function(req, res) {
 
 app.post('/send', function(req, res){
     console.log("/send endpoint called.");
-    var addr = new Address(req.body.signature, req.body.address);
+    var addr = new Address(req.body.signature, req.body.from);
     if(addr.isValid(req.body.message)){
       console.log("Address was valid");
       var data = {
@@ -52,7 +50,7 @@ app.post('/send', function(req, res){
 });
 
 //required fields: signature, address
-app.post('/create_inbox', function(req, res){
+app.post('/inbox', function(req, res){
   console.log('/create_inbox called...');
   var addr = new Address(req.body.signature, req.body.address);
   if(addr.isValid(req.body.address)){

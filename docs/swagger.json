@@ -17,8 +17,12 @@
   "basePath": "/v2",
   "tags": [
     {
-      "name": "send",
-      "description": "Everything about sending mail"
+      "name": "sending",
+      "description": "Everything about sending mail."
+    },
+    {
+      "name": "receiving",
+      "description": "Everything about receiving mail."
     }
   ],
   "schemes": [
@@ -28,7 +32,7 @@
     "/send": {
       "post": {
         "tags": [
-          "send"
+          "sending"
         ],
         "summary": "Send an email",
         "description": "Sends an email if the provided signature matches the from address.",
@@ -51,8 +55,46 @@
           }
         ],
         "responses": {
-          "405": {
-            "description": "Invalid input"
+          "200": {
+            "description": "Success."
+          },
+          "500": {
+            "description": "Failure."
+          }
+        }
+      }
+    },
+    "/inbox": {
+      "post": {
+        "tags": [
+          "receiving"
+        ],
+        "summary": "Create a new inbox.",
+        "description": "Creates a new inbox.",
+        "operationId": "createInbox",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "ECDSA signature and address to map to an inbox.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateInboxRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "500": {
+            "description": "Failure."
           }
         }
       }
@@ -63,22 +105,42 @@
       "type": "object",
       "required": [
         "signature",
-        "from_address",
+        "from",
+        "to",
+        "subject",
         "message"
       ],
       "properties": {
         "signature": {
           "type": "string"
         },
-        "from_address": {
+        "from": {
+          "type": "string"
+        },
+        "to": {
+          "type": "string"
+        },
+        "subject": {
           "type": "string"
         },
         "message": {
           "type": "string"
         }
-      },
-      "xml": {
-        "name": "SendRequest"
+      }
+    },
+    "CreateInboxRequest": {
+      "type": "object",
+      "required": [
+        "signature",
+        "address"
+      ],
+      "properties": {
+        "signature": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        }
       }
     }
   }
