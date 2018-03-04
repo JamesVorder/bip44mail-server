@@ -1,0 +1,85 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is a server to support siloed inbox creation, and mailgun interactions for the [bip44Mail-client](https://github.com/bip44Mail/bip44Mail-client)",
+    "version": "1.0.0",
+    "title": "bip44Mail",
+    "termsOfService": "",
+    "contact": {
+      "email": "creativemedicine@protonmail.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host": "localhost:3000",
+  "basePath": "/v2",
+  "tags": [
+    {
+      "name": "send",
+      "description": "Everything about sending mail"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/send": {
+      "post": {
+        "tags": [
+          "send"
+        ],
+        "summary": "Send an email",
+        "description": "Sends an email if the provided signature matches the from address.",
+        "operationId": "sendMail",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Email info and an ECDSA signature.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SendRequest"
+            }
+          }
+        ],
+        "responses": {
+          "405": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "SendRequest": {
+      "type": "object",
+      "required": [
+        "signature",
+        "from_address",
+        "message"
+      ],
+      "properties": {
+        "signature": {
+          "type": "string"
+        },
+        "from_address": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "SendRequest"
+      }
+    }
+  }
+}

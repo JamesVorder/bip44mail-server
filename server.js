@@ -2,14 +2,19 @@ var express = require('express');
 var Address = require('./models/Address.js');
 var bodyParser = require("body-parser");
 var Mailgun = require('mailgun-js');
+var Swagger = require('swagger-ui-express');
+var docs = require('./docs/swagger.json')
 
 //TODO: hide the next two values before commit
-var api_key = "";
-var domain = "";
+var api_key = "key-8d647bb3ca592ff0fdaec42f7cf2be5e";
+var domain = "bip44.email";
 var mailgun = new Mailgun({apiKey: api_key, domain: domain});
 
 
 var app = express();
+
+app.use('/api', Swagger.serve, Swagger.setup(docs));
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
