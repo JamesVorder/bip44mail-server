@@ -6,8 +6,8 @@ var Swagger = require('swagger-ui-express');
 var docs = require('./docs/swagger.json')
 
 //TODO: hide the next two values before commit
-var api_key = "key-8d647bb3ca592ff0fdaec42f7cf2be5e";
-var domain = "bip44.email";
+var api_key = "";
+var domain = "";
 var mailgun = new Mailgun({apiKey: api_key, domain: domain});
 
 
