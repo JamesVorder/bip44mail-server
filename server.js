@@ -3,12 +3,32 @@ var Address = require('./models/Address.js');
 var bodyParser = require("body-parser");
 var Mailgun = require('mailgun-js');
 var Swagger = require('swagger-ui-express');
-var docs = require('./docs/swagger.json')
+var docs = require('./docs/swagger.json');
+var mongoose = require('mongoose');
 
 //TODO: hide the next two values before commit
 var api_key = "";
 var domain = "";
 var mailgun = new Mailgun({apiKey: api_key, domain: domain});
+
+var connected = false;
+mongoose.connect('mongodb://localhost/');
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  connected = true;
+});
+
+var MessageSchema = mongoose.Schema({
+  subject: String,
+  from: String,
+  to: String,
+  message: String
+});
+MessageSchema.methods.toString = function() {
+  return "Subject: " + this.subject + "\nBody: " + this.message + "\n";
+};
+var Message = mongoose.model('Message', MessageSchema);
 
 
 var app = express();
@@ -59,8 +79,8 @@ app.post('/inbox', function(req, res){
       'description': addr.location,
       'expression': 'match_recipient("' + addr.location + '")',
       //TODO: make the following field dynamic. (Maybe there's a free version that just forwards to your standard inbox)
-      //This action could also be changed to notify another endpoint on mail reciept, that can store the emails in an s3 bucket or something
-      'action': 'forward("jamesvorder@gmail.com")'
+      //This action could also be changed to notify another endpoint on mail receipt, that can store the emails in an s3 bucket or something
+      'action': 'forward("http://dev.bip44mail.com/mail")'
     }, function(error, body){
       if(error){
         res.status(500).send(error);
@@ -71,6 +91,44 @@ app.post('/inbox', function(req, res){
       }
     });
   }
+});
+
+app.post('/mail', function(req, res){
+  //TODO: store the incoming message in a db
+  console.log("/mail endpoint called with post.");
+  var incoming_msg = new Message({
+    subject: req.body['Subject'],
+    to: req.body['To'],
+    from: req.body['From'],
+    message: req.body['body-plain']
+  });
+  if(connected){ //save the message to mongo if we're connected
+    incoming_msg.save(function (err, data) {
+      if(err){
+        res.status(500).send(err);
+        console.log("Error: " + err);
+      } else{
+        res.status(200).send(data);
+        console.log(data);
+      }
+    });
+  } else{
+    res.status(500).send("Your server is not connected to a database.")
+  }
+});
+
+app.get('/mail', function(req, res){
+  //TODO: make this return all the mail received for a given address
+  console.log("/mail endpoint called with get.");
+  Message.find(function (err, messages) {
+    if(err){
+      res.status(500).send(err);
+      console.log('Error: ' + err);
+    } else{
+      res.status(200).send(messages);
+      console.log('Success: ' + messages);
+    }
+  });
 });
 
 app.listen(3000);
