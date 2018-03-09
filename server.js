@@ -125,8 +125,11 @@ app.get('/mail', function(req, res){
       res.status(500).send(err);
       console.log('Error: ' + err);
     } else{
-      res.status(200).send(messages);
-      console.log('Success: ' + messages);
+      var test = messages[0].toString();
+      //res.write();
+      res.end(test);
+      //res.status(200).send(test);
+      console.log('Success: ' + test);
     }
   });
 });
