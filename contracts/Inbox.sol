@@ -11,6 +11,7 @@ contract Inbox{
         bytes1 size;
         bytes32 location;
     }
+
     function convertBytesToBytes32(bytes inBytes)
     private
     pure
@@ -20,17 +21,22 @@ contract Inbox{
         }
 
         assembly {
-            outBytes32 := mload(add(inBytes, 128))
+            outBytes32 := mload(add(inBytes, 32))
         }
     }
+
     uint numMessages;
     mapping(uint => Message) messages;
     function addMessage(bytes _multihash)
     public
     returns(bool success) {
         uint messageID = numMessages++;
-        messages[messageID] = Message(Multihash(_multihash[1], _multihash[2],
-            convertBytesToBytes32(BytesLib.slice(_multihash, 3, _multihash.length - 3))));
+        messages[messageID] =
+        Message(
+            Multihash(
+                _multihash[1],
+                _multihash[2],
+                convertBytesToBytes32(BytesLib.slice(_multihash, 3, _multihash.length - 3))));
         return true;
     }
 }
