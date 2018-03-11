@@ -6,8 +6,8 @@ var Swagger = require('swagger-ui-express');
 var docs = require('./docs/swagger.json')
 
 //TODO: hide the next two values before commit
-var api_key = "";
-var domain = "";
+var api_key = "key-a4efcfdaf524b12df3b1ef4759516832";
+var domain = "bip44.email";
 var mailgun = new Mailgun({apiKey: api_key, domain: domain});
 
 
@@ -58,9 +58,7 @@ app.post('/inbox', function(req, res){
     mailgun.post('/routes', {'priority': 0,
       'description': addr.location,
       'expression': 'match_recipient("' + addr.location + '")',
-      //TODO: make the following field dynamic. (Maybe there's a free version that just forwards to your standard inbox)
-      //This action could also be changed to notify another endpoint on mail reciept, that can store the emails in an s3 bucket or something
-      'action': 'forward("jamesvorder@gmail.com")'
+      'action': 'forward("http://dev.bip44mail.com/mail")'
     }, function(error, body){
       if(error){
         res.status(500).send(error);
