@@ -1,11 +1,13 @@
-pragma solidity ^0.4.0;
+pragma solidity ^0.4.16;
 contract Message{
     address owner;
     Inbox creator;
-    string from;
-    string subject;
-    string message_body;
-    function Message(string _from, string _subject, string _message_body){
+    bytes32 from;
+    bytes32 subject;
+    bytes32 public message_body;
+
+    function Message(bytes32 _from, bytes32 _subject, bytes32 _message_body)
+    public {
         owner = msg.sender;
         creator = Inbox(msg.sender);
         from = _from;
@@ -15,9 +17,23 @@ contract Message{
 }
 
 contract Inbox {
-    mapping(string => Message) public messages; //for now, I can map by subject... this isn't a unique identifier!
-    //Message[] messages;
-    function AddMessage(string _from, string _subject, string _message_body) external {
-        new Message(_from, _subject, _message_body);
+    address[] messages;
+    function createMessage(bytes32 _from, bytes32 _subject, bytes32 _message_body)
+    private
+    returns(address message_address){
+        return new Message(_from, _subject, _message_body);
+    }
+    function AddMessage(bytes32 _from, bytes32 _subject, bytes32 _message_body)
+    external
+    returns(address message_address) {
+        address new_mail = createMessage(_from, _subject, _message_body);
+        messages.push(new_mail);
+        return new_mail;
+    }
+    function RetrieveMessage(Message _message)
+    public
+    view
+    returns(bytes32 msg_body){
+        return _message.message_body();
     }
 }
