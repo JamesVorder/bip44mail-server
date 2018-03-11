@@ -1,39 +1,36 @@
-pragma solidity ^0.4.16;
-contract Message{
-    address owner;
-    Inbox creator;
-    bytes32 from;
-    bytes32 subject;
-    bytes32 public message_body;
+pragma solidity ^0.4.20;
 
-    function Message(bytes32 _from, bytes32 _subject, bytes32 _message_body)
-    public {
-        owner = msg.sender;
-        creator = Inbox(msg.sender);
-        from = _from;
-        subject = _subject;
-        message_body = _message_body;
+import "https://github.com/GNSPS/solidity-bytes-utils/contracts/BytesLib.sol";
+
+contract Inbox{
+    struct Message{
+        Multihash location;
     }
-}
-
-contract Inbox {
-    address[] messages;
-    function createMessage(bytes32 _from, bytes32 _subject, bytes32 _message_body)
+    struct Multihash{
+        bytes1 version;
+        bytes1 size;
+        bytes32 location;
+    }
+    function convertBytesToBytes32(bytes inBytes)
     private
-    returns(address message_address){
-        return new Message(_from, _subject, _message_body);
+    pure
+    returns (bytes32 outBytes32) {
+        if (inBytes.length == 0) {
+            return 0x0;
+        }
+
+        assembly {
+            outBytes32 := mload(add(inBytes, 128))
+        }
     }
-    function AddMessage(bytes32 _from, bytes32 _subject, bytes32 _message_body)
-    external
-    returns(address message_address) {
-        address new_mail = createMessage(_from, _subject, _message_body);
-        messages.push(new_mail);
-        return new_mail;
-    }
-    function RetrieveMessage(Message _message)
+    uint numMessages;
+    mapping(uint => Message) messages;
+    function addMessage(bytes _multihash)
     public
-    view
-    returns(bytes32 msg_body){
-        return _message.message_body();
+    returns(bool success) {
+        uint messageID = numMessages++;
+        messages[messageID] = Message(Multihash(_multihash[1], _multihash[2],
+            convertBytesToBytes32(BytesLib.slice(_multihash, 3, _multihash.length - 3))));
+        return true;
     }
 }
